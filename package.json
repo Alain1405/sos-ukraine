@@ -36,6 +36,6 @@
     "webpack-dev-server": "^4.0.0-beta.3"
   },
   "engines": {
-    "node": "15.4.x"
+    "node": "15.x"
   }
 }
