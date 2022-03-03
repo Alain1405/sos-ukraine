@@ -67,6 +67,8 @@ function handleLocationSuccess(position) {
 
   const pos_string = "Lat: " + position.lat +  " Lon:" + position.lng
   $( "#coordinates" ).val(pos_string);
+  $( "#lat" ).val(position.lat);
+  $( "#lng" ).val(position.lng);
   $('#submitModal').modal()
 }
 function handleLocationError(

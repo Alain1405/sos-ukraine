@@ -4,10 +4,24 @@ Submit your location and phone number and we'll try to match make you with drive
 
 ## Setup
 
-```sh
+### Launch postgres
+
+`docker-compose up`
+
+### Install dependencies
+```
 npm i
-npm start  # development
+```
+
+### Build the frontend
+```sh
 npm run build  # production
+```
+
+### Rune the API
+
+```
+npm start  # development
 ```
 
 ## Deploy
