@@ -2,23 +2,33 @@ doctype html
 html
   head
     title Requests data
+    link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css")
   body
-    h1 Submitted requests
-    -var requestsList = requests
-    div
-      table.table.table-hover
-        thead
-          tr: th Users
-        tbody
-          tr
-            th="Google Maps"
-            th="Coordinate"
-            th="Phone number"
-            th="Message"
-        each request in requests
-          tr
-            td
-              a(href=request.map_link, target='_blank') Google Maps
-            td=request.coordinates
-            td=request.phone_number
-            td=request.message
+    div.container
+      h1 Submitted requests
+      -var requestsList = requests
+      div.row
+        table.table.table-hover
+          thead
+            tr: th Users
+          tbody
+            tr
+              th="Address"
+              th="Number of People"
+              th="Number of Children"
+              th="Phone number"
+              th="Message"
+              th="Date"
+              th="Status"
+          each request in requests
+            tr
+              td=request.address
+              td=request.num_people
+              td=request.num_children
+              td=request.phone_number
+              td=request.message
+              td=request.createdAt
+              td
+                form(action="/changeStatus/"+request.id, method="post")
+                  input(type="text" name="status" value=request.status) 
+                  input(type="submit")
