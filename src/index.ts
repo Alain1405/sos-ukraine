@@ -51,6 +51,7 @@ function initMap(): void {
           handleLocationSuccess(pos);
           infoWindow.open(map);
           map.setCenter(pos);
+          map.setZoom(15)
         },
         () => {
           handleLocationError(true, infoWindow, map.getCenter()!);
