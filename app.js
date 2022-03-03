@@ -6,28 +6,35 @@ require('dotenv').config()
 // Sequelize
 DATABASE_URL = process.env.DATABASE_URL
 const { Sequelize, Model, DataTypes } = require('sequelize');
-const sequelize = new Sequelize(DATABASE_URL) // Example for postgres
+const sequelize = new Sequelize(DATABASE_URL, {
+    dialectOptions: {
+        ssl: {
+            require: true,
+            rejectUnauthorized: false
+        }
+    }
+}) // Example for postgres
 
-class PickupRequest extends Model {}
+class PickupRequest extends Model { }
 PickupRequest.init({
     lat: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-      unique: false
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        unique: false
     },
     lng: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-      unique: false
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        unique: false
     },
     phone_number: {
-      type: DataTypes.STRING,
-      allowNull: false
+        type: DataTypes.STRING,
+        allowNull: false
     },
     message: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      unique: false
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: false
     },
 }, { sequelize, modelName: 'pickup_request' });
 
@@ -45,12 +52,12 @@ async function connect() {
 
 async function addRequest(rd) {
 
-  const result = await PickupRequest.create({
-    lat: rd.lat,
-    lng: rd.lng,
-    phone_number: rd.phone_number,
-    message: rd.message,
-  });
+    const result = await PickupRequest.create({
+        lat: rd.lat,
+        lng: rd.lng,
+        phone_number: rd.phone_number,
+        message: rd.message,
+    });
 }
 // EXPRESS
 const app = express();
