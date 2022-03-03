@@ -8,9 +8,9 @@ const pug = require('pug');
 // Sequelize
 DATABASE_URL = process.env.DATABASE_URL
 const { Sequelize, Model, DataTypes } = require('sequelize');
-dbOptions = {}
+var dbOptions = {}
 if (process.env.ENV != 'DEV') {
-    dbOptions[dialectOptions] = {
+    dbOptions.dialectOptions = {
         ssl: {
             require: process.env.ENV != 'DEV',
             rejectUnauthorized: false
