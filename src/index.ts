@@ -24,14 +24,14 @@ let map: google.maps.Map, infoWindow: google.maps.InfoWindow;
 
 function initMap(): void {
   map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
-    center: { lat: -34.397, lng: 150.644 },
-    zoom: 6,
+    center: { lat: 50.4448832, lng: 30.5028834 },
+    zoom: 8,
   });
   infoWindow = new google.maps.InfoWindow();
 
   const locationButton = document.createElement("button");
 
-  locationButton.textContent = "Pan to Current Location";
+  locationButton.textContent = "Get your location";
   locationButton.classList.add("custom-map-control-button");
 
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
@@ -48,6 +48,7 @@ function initMap(): void {
 
           infoWindow.setPosition(pos);
           infoWindow.setContent("Location found.");
+          handleLocationSuccess(pos);
           infoWindow.open(map);
           map.setCenter(pos);
         },
@@ -62,6 +63,12 @@ function initMap(): void {
   });
 }
 
+function handleLocationSuccess(position) {
+
+  const pos_string = "Lat: " + position.lat +  " Lon:" + position.lng
+  $( "#coordinates" ).val(pos_string);
+  $('#submitModal').modal()
+}
 function handleLocationError(
   browserHasGeolocation: boolean,
   infoWindow: google.maps.InfoWindow,
