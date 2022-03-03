@@ -17,7 +17,7 @@
   "scripts": {
     "build": "webpack --config ./webpack.config.js --mode production",
     "dev": "webpack serve --config  ./webpack.config.js --mode development",
-    "start": "webpack serve --config  ./webpack.config.js --mode development"
+    "start": "node app.js"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.4",
@@ -37,5 +37,8 @@
   },
   "engines": {
     "node": "15.x"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
   }
 }
