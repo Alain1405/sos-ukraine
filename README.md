@@ -10,6 +10,12 @@ npm start  # development
 npm run build  # production
 ```
 
+## Deploy
+
+```
+git push heroku
+```
+
 The application is currently using the `.env` file to embed the API key in the
 HTML document. This is a temporary key and is not valid for production usage. It
 can be replaced by following these instructions to
