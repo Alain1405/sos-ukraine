@@ -1,0 +1,24 @@
+doctype html
+html
+  head
+    title Requests data
+  body
+    h1 Submitted requests
+    -var requestsList = requests
+    div
+      table.table.table-hover
+        thead
+          tr: th Users
+        tbody
+          tr
+            th="Google Maps"
+            th="Coordinate"
+            th="Phone number"
+            th="Message"
+        each request in requests
+          tr
+            td
+              a(href=request.map_link, target='_blank') Google Maps
+            td=request.coordinates
+            td=request.phone_number
+            td=request.message
