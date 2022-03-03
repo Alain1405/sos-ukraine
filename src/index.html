@@ -41,12 +41,12 @@
         <div class="form-group">
           <label for="numPeople">Кількість людей/Number Of People</label>
           <input name="numPeople" type="number" class="form-control" id="numPeople"
-            placeholder="Enter the number of people" required>
+            placeholder="Enter the number of people" min="1" max="10" required>
         </div>
         <div class="form-group"> 
           <label for="numChildren">Кількість дітей/Number of Children</label>
           <input name="numChildren" type="number" class="form-control" id="numChildren"
-            placeholder="Enter the number of children" required>
+            placeholder="Enter the number of children" min="0" max="10" step="1" required>
         </div>
         <div class="form-group">
           <label for="message">Message</label>
