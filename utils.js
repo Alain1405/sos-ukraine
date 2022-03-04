@@ -1,12 +1,12 @@
-const { sequelize } = require("./models")
+const { db } = require("./models/index")
 const config = require('config');
 const Sentry = require("@sentry/node");
 const Tracing = require("@sentry/tracing");
 
 async function connectDb() {
     try {
-        await sequelize.sync();
-        await sequelize.authenticate();
+        await db.sequelize.sync();
+        await db.sequelize.authenticate();
         console.log('Connection has been established successfully.');
     } catch (error) {
         console.error('Unable to connect to the database:', error);
@@ -32,4 +32,12 @@ function initSentry(app) {
     app.use(Sentry.Handlers.requestHandler());
     app.use(Sentry.Handlers.tracingHandler());
 }
-module.exports = { connectDb, initSentry }
+
+const requestStatuses = {
+    "default": {id: "default", value: "Open"},
+    "in_progress": {id: "in_progress", value: "In Progress"},
+    "open": {id: "open", value: "Open"},
+    "closed": {id: "closed", value: "Closed"}
+}
+
+module.exports = { connectDb, initSentry, requestStatuses }

@@ -51,7 +51,7 @@ function initMap(): void {
           handleLocationSuccess(pos);
           infoWindow.open(map);
           map.setCenter(pos);
-          map.setZoom(15)
+          map.setZoom(15);
         },
         () => {
           handleLocationError(true, infoWindow, map.getCenter()!);
@@ -65,12 +65,11 @@ function initMap(): void {
 }
 
 function handleLocationSuccess(position) {
-
-  const pos_string = "Lat: " + position.lat +  " Lon:" + position.lng
-  $( "#coordinates" ).val(pos_string);
-  $( "#lat" ).val(position.lat);
-  $( "#lng" ).val(position.lng);
-  $('#submitModal').modal()
+  const pos_string = "Lat: " + position.lat + " Lon:" + position.lng;
+  $("#coordinates").val(pos_string);
+  $("#lat").val(position.lat);
+  $("#lng").val(position.lng);
+  $("#submitModal").modal();
 }
 function handleLocationError(
   browserHasGeolocation: boolean,
@@ -85,4 +84,5 @@ function handleLocationError(
   );
   infoWindow.open(map);
 }
+
 export { initMap };

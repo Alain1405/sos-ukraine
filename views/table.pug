@@ -1,8 +1,16 @@
 doctype html
 html
   head
+    style(type="text/css").
+      .status-column {
+        min-width: 150px
+      }
     title Requests data
     link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css")
+    link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css")
+    script(src='https://code.jquery.com/jquery-3.6.0.min.js')
+    script
+      include scripts.js
   body
     div.container
       h1 Submitted requests
@@ -19,7 +27,9 @@ html
               th="Phone number"
               th="Message"
               th="Date"
-              th="Status"
+              th="Case Manager 1"
+              th="Case Manager 2"
+              th.status-column="Status"
           each request in requests
             tr
               td=request.address
@@ -29,8 +39,23 @@ html
               td=request.message
               td=request.createdAt
               td
-                form(action="/changeStatus/"+request.id, method="post").form-inline
+                form(action="/changeManager/"+request.id, method="post").form-inline
                   div.form-group
-                    input(type="text" name="status" value=request.status) 
+                    input(type="text" name="case_manager" value=request.case_manager_1) 
+                    input(type="hidden" name="manager_number" value=1) 
                   div.form-group
                     input(type="submit")
+
+              td
+                form(action="/changeManager/"+request.id, method="post").form-inline
+                  div.form-group
+                    input(type="text" name="case_manager" value=request.case_manager_2) 
+                    input(type="hidden" name="manager_number" value=2) 
+                  div.form-group
+                    input(type="submit")
+              td
+                select(class="form-select" id="requestStatusSelect" aria-label="Default select example" data-res-id=request.id)
+                  - var statusOptions = pickupStatuses
+                  - var selectedOption = selectedStatus
+                    each opt in statusOptions
+                      option(value=opt.id, selected=opt.id == request.status) #{opt.value}

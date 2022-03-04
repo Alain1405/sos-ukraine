@@ -8,11 +8,11 @@ var passport = require('passport');
 var session = require('express-session');
 var SQLiteStore = require('connect-sqlite3')(session);
 
-const { PickupRequest } = require("./models")
+const { PickupRequest } = require("./models/requests")
 
 const Sentry = require("@sentry/node");
 
-const { connectDb, initSentry } = require("./utils");
+const { connectDb, initSentry, requestStatuses } = require("./utils");
 
 connectDb();
 
@@ -57,10 +57,13 @@ app.get('/', function (req, res) {
 app.get('/requests', ensureAuthenticated, function (req, res) {
     PickupRequest.findAll().then((results) => {
         // results.forEach(element => {
-        //     element.map_link = "https://www.google.com/maps/search/?api=1&query=" + element.lat + "," + element.lng;
-        //     element.coordinates = "Lat:" + element.lat + "; Lng: " + element.lng;
+        //     element.selectedStatus = requestStatuses.default;
+        //     if(requestStatuses.hasOwnProperty(element.status)){
+        //         element.selectedStatus = requestStatuses[element.status];
+        //     }
         // });
-        res.render('table', { title: 'Express', requests: results });
+        let selectOptions = Object.values(requestStatuses)
+        res.render('table', { requests: results, pickupStatuses: selectOptions, statusOptions: selectOptions });
 
     })
 });
@@ -91,6 +94,24 @@ app.post('/changeStatus/:id', function (req, res) {
     try {
         PickupRequest.findByPk(id).then((pickup_request) => {
             pickup_request.status = req.body.status;
+            pickup_request.save()
+            res.status(200).send('Status updated')
+
+        }).catch((error) => {
+
+            res.status(400).send('Something went wrong: ', error)
+        })
+    } catch (error) {
+    }
+
+});
+app.post('/changeManager/:id', function (req, res) {
+    const id = req.params.id; // '1'
+    const manager_field = "case_manager_" + req.body.manager_number;
+    console.log(req.body.case_manager)
+    try {
+        PickupRequest.findByPk(id).then((pickup_request) => {
+            pickup_request[manager_field] = req.body.case_manager;
             pickup_request.save()
             res.status(200).send('Status updated')
 

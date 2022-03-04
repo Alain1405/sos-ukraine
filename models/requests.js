@@ -1,8 +1,6 @@
-const config = require('config');
-const { Sequelize, Model, DataTypes } = require('sequelize');
-// const { sequelize } = require('./utils');
+const { Model, DataTypes } = require('sequelize');
+const { db } = require('./index');
 
-const sequelize = new Sequelize(config.get('db.url'), config.get('db.options')) // Example for postgre
 class PickupRequest extends Model { }
 
 PickupRequest.init({
@@ -44,10 +42,17 @@ PickupRequest.init({
         type: DataTypes.STRING,
         allowNull: true,
         unique: false
+    },
+    case_manager_1: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: false
+    },
+    case_manager_2: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: false
     }
-}, { sequelize, modelName: 'pickup_request' });
+}, { sequelize: db.sequelize, modelName: 'pickup_request' });
 
-module.exports = {
-    PickupRequest: PickupRequest,
-    sequelize: sequelize
-}
+module.exports = { PickupRequest }
