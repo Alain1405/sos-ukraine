@@ -8,6 +8,7 @@ var config = require('config')
 
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next(); }
+    req.session.returnTo = req.originalUrl;
     res.redirect('/login')
 }
 
@@ -35,10 +36,10 @@ passport.use(new LocalStrategy(function verify(usr, psw, cb) {
 
 
 }));
-router.post('/login/password', passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/login'
-}));
+router.post('/login/password', passport.authenticate('local'), function (req, res) {
+    res.redirect(req.session.returnTo || '/');
+    delete req.session.returnTo;
+});
 
 router.get('/login', function (req, res, next) {
     res.render('login');
