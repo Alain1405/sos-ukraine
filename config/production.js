@@ -1,3 +1,4 @@
+process.env.ALLOW_CONFIG_MUTATIONS = 'true';
 module.exports = {
     "db": {
         "options": {
