@@ -5,7 +5,7 @@ const Tracing = require("@sentry/tracing");
 
 async function connectDb() {
     try {
-        await db.sequelize.sync();
+        await db.sequelize.sync({ alter: true });
         await db.sequelize.authenticate();
         console.log('Connection has been established successfully.');
     } catch (error) {
