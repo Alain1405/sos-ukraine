@@ -2,8 +2,11 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 require('dotenv').config()
-const pug = require('pug');
 
+const Sentry = require("@sentry/node");
+const Tracing = require("@sentry/tracing");
+
+SENTRY_DNS = process.env.SENTRY_DNS
 
 REQUESTS_PASSWORD = process.env.REQUESTS_PASSWORD || 'sos'
 
@@ -66,6 +69,7 @@ PickupRequest.init({
 
 
 connect();
+
 async function connect() {
     try {
         await sequelize.sync();
@@ -91,6 +95,26 @@ async function addRequest(rd) {
 // EXPRESS
 const app = express();
 const port = process.env.PORT || 8000;
+Sentry.init({
+    dsn: SENTRY_DNS,
+    integrations: [
+        // enable HTTP calls tracing
+        new Sentry.Integrations.Http({ tracing: true }),
+        // enable Express.js middleware tracing
+        new Tracing.Integrations.Express({ app }),
+    ],
+
+    // Set tracesSampleRate to 1.0 to capture 100%
+    // of transactions for performance monitoring.
+    // We recommend adjusting this value in production
+    tracesSampleRate: 1.0,
+});
+
+// RequestHandler creates a separate execution context using domains, so that every
+// transaction/span/breadcrumb is attached to its own Hub instance
+app.use(Sentry.Handlers.requestHandler());
+// TracingHandler creates a trace for every incoming request
+app.use(Sentry.Handlers.tracingHandler());
 
 app.use(express.static('public'))
 app.set('view engine', 'pug')
@@ -107,12 +131,12 @@ app.get('/requests', function (req, res) {
         //     element.map_link = "https://www.google.com/maps/search/?api=1&query=" + element.lat + "," + element.lng;
         //     element.coordinates = "Lat:" + element.lat + "; Lng: " + element.lng;
         // });
-        console.log(results)
         res.render('table', { title: 'Express', requests: results });
 
     })
 });
 app.post('/submitLocation', function (req, res) {
+    console.log('Submitting request: ')
     console.log(req.body);
 
     try {
@@ -134,11 +158,8 @@ app.post('/submitLocation', function (req, res) {
 });
 app.post('/changeStatus/:id', function (req, res) {
     const id = req.params.id; // '1'
-    console.log(id)
-    console.log(req.body.status)
     try {
         PickupRequest.findByPk(id).then((pickup_request) => {
-            console.log(pickup_request)
             pickup_request.status = req.body.status;
             pickup_request.save()
             res.status(200).send('Status updated')
@@ -151,6 +172,18 @@ app.post('/changeStatus/:id', function (req, res) {
     }
 
 });
+
+// The error handler must be before any other error middleware and after all controllers
+app.use(Sentry.Handlers.errorHandler());
+
+// Optional fallthrough error handler
+app.use(function onError(err, req, res, next) {
+  // The error id is attached to `res.sentry` to be returned
+  // and optionally displayed to the user for support.
+  res.statusCode = 500;
+  res.end(res.sentry + "\n");
+});
+
 
 app.listen(port);
 console.log('Server started at http://localhost:' + port);

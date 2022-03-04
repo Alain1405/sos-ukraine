@@ -22,7 +22,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = (env) => {
   return {
-    entry: ["./src/index.ts"],
+    entry: ["./frontend/index.ts"],
     module: {
       rules: [
         {
@@ -74,7 +74,7 @@ module.exports = (env) => {
         ? []
         : [
             new HtmlWebpackPlugin({
-              template: "src/index.html",
+              template: "frontend/index.html",
               inject: false,
             }),
             new HtmlReplaceWebpackPlugin([

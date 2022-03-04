@@ -17,7 +17,10 @@
   "scripts": {
     "build": "webpack --config ./webpack.config.js --mode production",
     "dev": "webpack serve --config  ./webpack.config.js --mode development",
-    "start": "node app.js"
+    "start": "node app.js",
+    "start-dev": "npm-run-all --parallel start watch:build",
+    "watch:build": "webpack --watch --config  ./webpack.config.js --mode development",
+    "watch:server": "nodemon \"./dist/index.js\" --watch \"./dist\""
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.4",
@@ -39,9 +42,12 @@
     "node": "15.x"
   },
   "dependencies": {
+    "@sentry/node": "^6.18.1",
+    "@sentry/tracing": "^6.18.1",
     "body-parser": "^1.19.0",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "npm-run-all": "^4.1.5",
     "pg": "^8.7.3",
     "pg-hstore": "^2.3.4",
     "pug": "^3.0.2",

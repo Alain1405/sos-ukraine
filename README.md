@@ -13,19 +13,14 @@ Submit your location and phone number and we'll try to match make you with drive
 npm i
 ```
 
-### Build the frontend
-```sh
-npm run build  # production
+### Run in development
+Frontend files will be built and watched for changes, backend will run"
 ```
-
-### Rune the API
-
-```
-npm start  # development
+npm start-dev
 ```
 
 ## Deploy
-
+Make sure all changes are committed"
 ```
 git push heroku
 ```
