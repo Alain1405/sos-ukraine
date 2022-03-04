@@ -4,78 +4,13 @@ const bodyParser = require('body-parser');
 require('dotenv').config()
 const config = require('config');
 
+const { PickupRequest } = require("./models")
+
 const Sentry = require("@sentry/node");
-const Tracing = require("@sentry/tracing");
 
+const { connectDb, initSentry } = require("./utils");
 
-// Sequelize
-const { Sequelize, Model, DataTypes } = require('sequelize');
-var dbOptions = {}
-if (config.get('env') != 'DEV') {
-    dbOptions.dialectOptions = {
-        ssl: {
-            require: config.get('env') != 'DEV',
-            rejectUnauthorized: false
-        }
-    }
-}
-const sequelize = new Sequelize(config.get('db_url'), dbOptions) // Example for postgres
-
-class PickupRequest extends Model { }
-PickupRequest.init({
-    lat: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-        unique: false
-    },
-    lng: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-        unique: false
-    },
-    num_people: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        unique: false
-    },
-    num_children: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        unique: false
-    },
-    phone_number: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    message: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        unique: false
-    },
-    address: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        unique: false
-    },
-    status: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        unique: false
-    }
-}, { sequelize, modelName: 'pickup_request' });
-
-
-connect();
-
-async function connect() {
-    try {
-        await sequelize.sync();
-        await sequelize.authenticate();
-        console.log('Connection has been established successfully.');
-    } catch (error) {
-        console.error('Unable to connect to the database:', error);
-    }
-}
+connectDb();
 
 async function addRequest(rd) {
     const result = await PickupRequest.create({
@@ -92,32 +27,13 @@ async function addRequest(rd) {
 // EXPRESS
 const app = express();
 const port = config.get('app_port') || 8000;
-Sentry.init({
-    dsn: config.get('sentry_dns'),
-    integrations: [
-        // enable HTTP calls tracing
-        new Sentry.Integrations.Http({ tracing: true }),
-        // enable Express.js middleware tracing
-        new Tracing.Integrations.Express({ app }),
-    ],
 
-    // Set tracesSampleRate to 1.0 to capture 100%
-    // of transactions for performance monitoring.
-    // We recommend adjusting this value in production
-    tracesSampleRate: 1.0,
-});
+initSentry(app)
 
-// RequestHandler creates a separate execution context using domains, so that every
-// transaction/span/breadcrumb is attached to its own Hub instance
-app.use(Sentry.Handlers.requestHandler());
-// TracingHandler creates a trace for every incoming request
-app.use(Sentry.Handlers.tracingHandler());
-
-app.use(express.static('public'))
 app.set('view engine', 'pug')
-
+app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: true }));
-// sendFile will go here
+
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, '/public/index.html'));
 });
@@ -132,6 +48,7 @@ app.get('/requests', function (req, res) {
 
     })
 });
+
 app.post('/submitLocation', function (req, res) {
     console.log('Submitting request: ')
     console.log(req.body);
@@ -175,10 +92,10 @@ app.use(Sentry.Handlers.errorHandler());
 
 // Optional fallthrough error handler
 app.use(function onError(err, req, res, next) {
-  // The error id is attached to `res.sentry` to be returned
-  // and optionally displayed to the user for support.
-  res.statusCode = 500;
-  res.end(res.sentry + "\n");
+    // The error id is attached to `res.sentry` to be returned
+    // and optionally displayed to the user for support.
+    res.statusCode = 500;
+    res.end("Error: " + err + "Code: " + res.sentry + "\n");
 });
 
 

@@ -29,6 +29,8 @@ html
               td=request.message
               td=request.createdAt
               td
-                form(action="/changeStatus/"+request.id, method="post")
-                  input(type="text" name="status" value=request.status) 
-                  input(type="submit")
+                form(action="/changeStatus/"+request.id, method="post").form-inline
+                  div.form-group
+                    input(type="text" name="status" value=request.status) 
+                  div.form-group
+                    input(type="submit")
