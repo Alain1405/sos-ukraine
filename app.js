@@ -2,27 +2,24 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 require('dotenv').config()
+const config = require('config');
 
 const Sentry = require("@sentry/node");
 const Tracing = require("@sentry/tracing");
 
-SENTRY_DNS = process.env.SENTRY_DNS
-
-REQUESTS_PASSWORD = process.env.REQUESTS_PASSWORD || 'sos'
 
 // Sequelize
-DATABASE_URL = process.env.DATABASE_URL
 const { Sequelize, Model, DataTypes } = require('sequelize');
 var dbOptions = {}
-if (process.env.ENV != 'DEV') {
+if (config.get('env') != 'DEV') {
     dbOptions.dialectOptions = {
         ssl: {
-            require: process.env.ENV != 'DEV',
+            require: config.get('env') != 'DEV',
             rejectUnauthorized: false
         }
     }
 }
-const sequelize = new Sequelize(DATABASE_URL, dbOptions) // Example for postgres
+const sequelize = new Sequelize(config.get('db_url'), dbOptions) // Example for postgres
 
 class PickupRequest extends Model { }
 PickupRequest.init({
@@ -94,9 +91,9 @@ async function addRequest(rd) {
 }
 // EXPRESS
 const app = express();
-const port = process.env.PORT || 8000;
+const port = config.get('app_port') || 8000;
 Sentry.init({
-    dsn: SENTRY_DNS,
+    dsn: config.get('sentry_dns'),
     integrations: [
         // enable HTTP calls tracing
         new Sentry.Integrations.Http({ tracing: true }),
