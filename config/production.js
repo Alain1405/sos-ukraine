@@ -1,7 +1,7 @@
 module.exports = {
     "db": {
         "options": {
-            dialectOptions = {
+            dialectOptions: {
                 ssl: {
                     require: true,
                     rejectUnauthorized: false
