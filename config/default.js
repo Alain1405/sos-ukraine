@@ -1,20 +1,25 @@
-const config = {
+const { options } = require('pg/lib/defaults');
+
+var defer = require('config/defer').deferConfig;
+
+
+module.exports = {
     "sentry_dns": process.env.SENTRY_DNS,
     "db": {
         "url": process.env.DATABASE_URL,
-        "options": {}
+        "options": defer(function() {
+            var options = {}
+            if (this.env != 'DEV') {
+                options.dialectOptions = {
+                    ssl: {
+                        require: config.get('env') != 'DEV',
+                        rejectUnauthorized: false
+                    }
+                }
+            };
+            return options;
+        })
     },
     "env": process.env.ENV,
     "app_port": process.env.PORT || 8000
 };
-
-if (config.env != 'DEV') {
-    config.db.options.dialectOptions = {
-        ssl: {
-            require: config.get('env') != 'DEV',
-            rejectUnauthorized: false
-        }
-    }
-};
-
-module.exports = {config};
