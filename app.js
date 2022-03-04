@@ -3,6 +3,10 @@ const path = require('path');
 const bodyParser = require('body-parser');
 require('dotenv').config()
 const config = require('config');
+var {authRouter, ensureAuthenticated} = require('./routes/auth');
+var passport = require('passport');
+var session = require('express-session');
+var SQLiteStore = require('connect-sqlite3')(session);
 
 const { PickupRequest } = require("./models")
 
@@ -28,17 +32,29 @@ async function addRequest(rd) {
 const app = express();
 const port = config.get('app_port') || 8000;
 
+app.use(express.static('public'))
+
+app.use(session({
+  secret: config.get("auth.secret"),
+  resave: false,
+  saveUninitialized: false,
+  store: new SQLiteStore()
+}));
+
+app.use(passport.authenticate('session'));
+
 initSentry(app)
 
 app.set('view engine', 'pug')
-app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use('/', authRouter);
 
 app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, '/public/index.html'));
 });
 
-app.get('/requests', function (req, res) {
+app.get('/requests', ensureAuthenticated, function (req, res) {
     PickupRequest.findAll().then((results) => {
         // results.forEach(element => {
         //     element.map_link = "https://www.google.com/maps/search/?api=1&query=" + element.lat + "," + element.lng;
@@ -95,6 +111,7 @@ app.use(function onError(err, req, res, next) {
     // The error id is attached to `res.sentry` to be returned
     // and optionally displayed to the user for support.
     res.statusCode = 500;
+    console.log(err)
     res.end("Error: " + err + "Code: " + res.sentry + "\n");
 });
 
