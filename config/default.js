@@ -6,7 +6,7 @@ const config = {
     },
     "env": process.env.ENV,
     "app_port": process.env.PORT || 8000
-}
+};
 
 if (config.env != 'DEV') {
     config.db.options.dialectOptions = {
