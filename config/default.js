@@ -17,4 +17,4 @@ if (config.env != 'DEV') {
     }
 };
 
-module.exports = config;
+module.exports = {config};
