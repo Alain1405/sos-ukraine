@@ -12,7 +12,7 @@ module.exports = {
             if (this.env != 'DEV') {
                 options.dialectOptions = {
                     ssl: {
-                        require: config.get('env') != 'DEV',
+                        require: true,
                         rejectUnauthorized: false
                     }
                 }
